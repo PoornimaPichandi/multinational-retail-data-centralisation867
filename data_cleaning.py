@@ -1,7 +1,13 @@
 import pandas as pd
 import re
 class DataCleaning:
+    """
+    A class that handles data cleaning operations
+    """
     def clean_user_data(self,user_df):
+        """
+        This method used for cleaning data by handling null values and fixing data types
+        """
         #Remove rows with NULL values
         print("Available columns in the DataFrame:", user_df.columns)
         
@@ -31,6 +37,12 @@ class DataCleaning:
         return user_df
     
     def clean_card_data(self, df):
+        """
+        This method cleans card data by handling null values and fixing data types.
+        Args:
+        df - Dataframe containing card data.
+        Retunrs: returns dataframe Cleaned card dataframe 
+        """
         # Drop rows with any missing values
         df = df.dropna()
 
@@ -64,11 +76,50 @@ class DataCleaning:
         return df
 
     
-    def clean_store_data(self, store_df):        
-        store_df = store_df.dropna()
-        return store_df
+    def clean_store_data(self, stores_df):  
+        """
+        Cleans store data by handling null values and fixing data types.
+        Args: 
+        store_df - Dataframe containing store data.
+        Return : returns cleaned store data frame  
+        """       
+       # Replace 'NULL' strings with actual NaN values
+        stores_df.replace('NULL', pd.NA, inplace=True)
+    
+        # Remove rows where 'address' contains 'NULL'
+        stores_df = stores_df.dropna(subset=['address'])
+    
+        # Remove rows where 'longitude' cannot be converted to a float
+        stores_df = stores_df[pd.to_numeric(stores_df['longitude'], errors='coerce').notnull()]
+    
+        # Ensure 'staff_numbers' is of type string to handle any non-numeric values
+        stores_df['staff_numbers'] = stores_df['staff_numbers'].astype(str)
+    
+        # Keep rows where 'staff_numbers' can be converted to an integer
+        stores_df = stores_df[stores_df['staff_numbers'].str.isdigit()]
+    
+        # Convert 'staff_numbers' back to integers
+        stores_df['staff_numbers'] = stores_df['staff_numbers'].astype(int)
+        # Correct entries in 'continent' column
+        stores_df['continent'] = stores_df['continent'].replace({'eeEurope': 'Europe', 'eeAmerica': 'America'})
+    
+        # Remove rows with any NaN values
+        df_cleaned = stores_df.dropna()
+    
+        # Remove duplicate rows
+        df_cleaned = df_cleaned.drop_duplicates()    
+        return stores_df
+   
 
-    def convert_product_weights(self, products_df):        
+    def convert_product_weights(self, products_df):   
+        """Converts product weights to kilograms.
+
+        Args:
+            products_df : DataFrame containing product data.
+
+        Returns:
+            Returns DataFrame with converted weights
+        """   
         def parse_weight(weight):
             weight = str(weight).lower().strip()
             # Define patterns for different formats
@@ -100,10 +151,31 @@ class DataCleaning:
         products_df = products_df.dropna(subset=['weight'])
         return products_df
 
-
+       
     def clean_products_data(self,products_df):
-        products_df = products_df.dropna(subset=['weight'])
-        return products_df
+        # Function to check if product_price is valid
+        def is_valid_price(price):
+            try:
+                float(price.replace('£', ''))
+                return True
+            except ValueError:
+                return False
+        # Apply the function to filter out invalid product prices
+        products_df = products_df[products_df['product_price'].apply(is_valid_price)]
+        # Remove the '£' character from the 'product_price' column and convert it to numeric
+        products_df['product_price'] = products_df['product_price'].str.replace('£', '').astype(float, errors='ignore')
+    
+        # Ensure 'weight' column is numeric, handle non-numeric values
+        products_df['weight'] = pd.to_numeric(products_df['weight'], errors='coerce')
+        products_df = products_df.dropna(subset=['weight'])           
+
+        # Remove rows with any NaN values
+        products_df_cleaned = products_df.dropna()           
+        # Remove duplicate rows
+        products_df_cleaned = products_df_cleaned.drop_duplicates()
+        #Reset index
+        products_df_cleaned = products_df.reset_index(drop=True)  
+        return products_df_cleaned
     
     def clean_orders_data(self, orders_df):
         # Drop first,lastname columns
@@ -111,15 +183,24 @@ class DataCleaning:
         return orders_df
     
     def clean_date_details(self, json_df):        
-        # Combine date-related fields into a single datetime column
-        json_df['datetime'] = pd.to_datetime(json_df['year'].astype(str) + '-' + json_df['month'].astype(str) + '-' + json_df['day'].astype(str) + ' ' + json_df['timestamp'], errors='coerce')
-        
-        # Drop rows with NaT in 'datetime' column
-        json_df = json_df.dropna(subset=['datetime'])
-        
-        # Drop the individual date-related columns if they are no longer needed
-        json_df = json_df.drop(columns=['year', 'month', 'day', 'timestamp'])
-         
+
+        for column in ['year', 'month', 'day']:
+            if column in json_df.columns:
+                json_df[column] = pd.to_numeric(json_df[column], errors='coerce')
+    
+        # Remove rows with any NaN values in date-related columns
+        json_df = json_df.dropna(subset=['year', 'month', 'day'])
+    
+        # Check for valid months (1 to 12)
+        json_df = json_df[json_df['month'].between(1, 12)]
+    
+        # Remove rows with any NaN values
+        json_df = json_df.drop(columns=['timestamp'])
+        json_df.dropna()    
+        # Reset the index
+        json_df.reset_index(drop=True)
         # Ensure the 'date_uuid' is treated as a string
         json_df['date_uuid'] = json_df['date_uuid'].astype(str)
+        # Reset the index
+        json_df = json_df.reset_index(drop=True)
         return json_df
