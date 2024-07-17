@@ -37,7 +37,37 @@
     - pip install botocore
     
 ## Usage Instructions
+   ## Milestone 1 
+   The github repository setup - created and cloned
+   ## Milstone 2
+- Extract and clean the data from the data sources
+    - Setup a new database to store the data.
+    - Initializing three project classes.
+        - Data Extractor in data_extraction.py
+        - DataBase utils in database_utils.py
+        - Data cleaning in data_cleaning.py
+     - Extract and clean the user data
+  
+    - Extracting users and cleaning card details.
+    - Extract and clean the details of each store.
+    - Extract and clean the product details.
+    - Retreive and clean the orders table.
+    - Retreive and clean the date events data.
+  ## Milestone 3
+  - Create the database schema
+    - Cast the columns of the orders_table to the correct data types.
+    - Cast the columns of the dim_users to the correct database.
+    - Update dim_store_details table
+    - Make changes to the dim_products table for the delivery team
+    - update the dim_products table with the required data types.
+    - Update the dim_date_times table.
+    - Update the dim_card_details table.
+    - Create the primary keys in the dimension table.
+    - Finalizing the star based schema and add foreign keys to the orders_table.
     
+  ## Milstone 4
+  - Querying the data.
+  - Answering the business questions and extracting the data from the database using SQL.    
    
 ## File Structure of the Project
     --multinational-retail-data-centralisation867
@@ -50,9 +80,11 @@
         |db_local_creds.yaml.py
         |main.py
         |products.csv
+        |mrdc_data_centralization.sql
+        |mrdc_ERD
+        |mrdc_project_star_schema.sql
         |README.md
-    
-    
+
 
 ## License Information
     This project is licensed under the [NAME HERE] License - see the LICENSE.md file for details
