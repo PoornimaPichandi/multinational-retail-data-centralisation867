@@ -5,6 +5,13 @@ SELECT * FROM dim_products;
 SELECT * FROM orders_table;
 SELECT * FROM dim_date_times;
 
+DELETE FROM dim_users;
+DROP TABLE dim_users CASCADE;
+DROP TABLE dim_card_details CASCADE;
+DROP TABLE dim_store_details CASCADE;
+DROP TABLE dim_products CASCADE;
+DROP TABLE orders_table CASCADE;
+
 --orders_table
 ALTER TABLE orders_table 
 	ALTER COLUMN date_uuid TYPE UUID USING date_uuid::uuid;

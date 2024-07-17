@@ -79,8 +79,8 @@ class DatabaseConnector:
         engine : Databse Credentials        
         """
        
-        df.to_sql(table_name,engine,if_exists='replace',index=False)
+        df.to_sql(table_name, engine, if_exists='replace')
        
 
-
+  
 

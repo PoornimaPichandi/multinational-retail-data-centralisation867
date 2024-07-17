@@ -104,7 +104,6 @@ def main():
     #upload products data
     db_connector.upload_to_db(clean_products_data,'dim_products',local_engine)
 
-
     # Upload cleaned orders data to the orders_table
     db_connector.upload_to_db(cleaned_orders_df, 'orders_table',local_engine)
 

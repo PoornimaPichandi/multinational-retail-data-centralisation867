@@ -195,7 +195,7 @@ class DataCleaning:
         json_df = json_df[json_df['month'].between(1, 12)]
     
         # Remove rows with any NaN values
-        json_df = json_df.drop(columns=['timestamp'])
+        #json_df = json_df.drop(columns=['timestamp'])
         json_df.dropna()    
         # Reset the index
         json_df.reset_index(drop=True)
